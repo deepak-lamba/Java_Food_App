@@ -1,16 +1,21 @@
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
-import java.io.IOException;
+
+import java.util.List;
 import java.util.Map;
+import java.io.IOException;
 
 public class MenuHandler implements HttpHandler {
 
-    private final FoodOrderingSystem foodOrderingSystem;
+    private final MenuItemDAO menuItemDAO;
     private final FoodOrderingApp app;
 
-    public MenuHandler(FoodOrderingSystem foodOrderingSystem, FoodOrderingApp app) {
-        this.foodOrderingSystem = foodOrderingSystem;
+    private final FoodOrderingSystem FS;
+
+    public MenuHandler(MenuItemDAO menuItemDAO, FoodOrderingSystem FS, FoodOrderingApp app) {
+        this.menuItemDAO = menuItemDAO;
         this.app = app;
+        this.FS=FS;
     }
 
     @Override
@@ -20,11 +25,12 @@ public class MenuHandler implements HttpHandler {
     }
 
     private String getMenuResponse() {
-        Map<String, Double> menuCopy = foodOrderingSystem.getMenu();
+        // Assuming you have a method in MenuItemDAO to fetch all menu items and their prices
+        List<MenuItem> menuItems = menuItemDAO.getAllMenuItems();
 
         StringBuilder menuString = new StringBuilder("Menu:\n");
-        for (String entry : menuCopy.keySet()) {
-            menuString.append(entry).append(": $").append(menuCopy.get(entry)).append("\n");
+        for (MenuItem entry : menuItems) {
+            menuString.append(entry.getid()).append(" ").append(entry.getname()).append(" ").append(entry.getprice()).append("\n");
         }
         return menuString.toString();
     }

@@ -1,39 +1,36 @@
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 public class FoodOrderingSystem {
 
-    private Map<String, Double> menu = new HashMap<>();
-    private List<Order> orders = new ArrayList<>();
+    private OrderDAO orderDAO;
 
-    public FoodOrderingSystem() {
-        initializeMenu();
+    public FoodOrderingSystem(OrderDAO orderDAO) {
+
+        this.orderDAO = orderDAO;
     }
 
-    public Map<String, Double> getMenu() {
-        return menu;
-    }
+    public boolean placeOrder(int customerid, int itemid, int price, Timestamp date) {
 
-    public void placeOrder(String customerName, String itemName) {
-        if (menu.containsKey(itemName)) {
-            double price = menu.get(itemName);
-            Order order = new Order(customerName, itemName, price);
-            orders.add(order);
-            System.out.println(customerName + " placed an order for " + itemName);
+        if (price > 0) {
+            Order order = new Order(customerid, itemid, price, date);
+            boolean success = orderDAO.placeOrder(customerid, itemid, price, date);
+
+            if (success) {
+                System.out.println(customerid + " placed an order for " + itemid);
+            } else {
+                System.out.println("Failed to place the order. Please try again.");
+            }
+            return success;
         } else {
             System.out.println("Item not found on the menu.");
+            return false;
         }
     }
 
-    private void initializeMenu() {
-        menu.put("Burger", 5.99);
-        menu.put("Pizza", 8.99);
-        // Add more items to the menu as needed
-    }
-
     public List<Order> getOrders() {
-        return orders;
+        // Assuming you have a method in OrderDAO to fetch all orders
+        return orderDAO.getAllOrders();
     }
 }
